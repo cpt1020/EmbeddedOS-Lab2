@@ -56,6 +56,6 @@
 ../FreeRTOS/tasks.c:4961:7:vTaskNotifyGiveFromISR	48	static,ignoring_inline_asm
 ../FreeRTOS/tasks.c:5048:13:xTaskNotifyStateClear	24	static
 ../FreeRTOS/tasks.c:5085:13:prvAddCurrentTaskToDelayedList	24	static
-../FreeRTOS/tasks.c:5222:6:vPadding	24	static
-../FreeRTOS/tasks.c:5228:6:vPrintTCB	216	static
-../FreeRTOS/tasks.c:5285:6:Taskmonitor	184	static
+../FreeRTOS/tasks.c:5220:6:vPadding	24	static
+../FreeRTOS/tasks.c:5226:6:vPrintTCB	216	static
+../FreeRTOS/tasks.c:5283:6:Taskmonitor	176	static

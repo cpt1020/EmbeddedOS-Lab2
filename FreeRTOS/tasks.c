@@ -5295,44 +5295,82 @@ void Taskmonitor(void)
 	sprintf(Monitor_data,"|Name      |Priority(Base/actual)  |pxStack    |pxTopOfStack    |State    |\n\r");
 	HAL_UART_Transmit(&huart2, (uint8_t *) Monitor_data, strlen(Monitor_data), 0xffff);
 
+	// for version 2
+	TCB_t *pxNextTCB = NULL, *pxFirstTCB = NULL;
+
 	/* pxReadyTasksLists */
+	// version 1
+	// both version 1 and version 2 work the same
+//	for (UBaseType_t priority = 0; priority < configMAX_PRIORITIES; ++priority) {
+//
+//		UBaseType_t readyListLength = listCURRENT_LIST_LENGTH(&pxReadyTasksLists[priority]);
+//
+//		if (readyListLength != 0) {
+//
+//			ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(&pxReadyTasksLists[priority]);
+//
+//			for (UBaseType_t i = 0; i < readyListLength; ++i) {
+//				vPrintTCB(curNode->pvOwner, "Ready");
+//				curNode = curNode->pxNext;
+//			}
+//		}
+//	}
+
+	// version 2 (using listGET_OWNER_OF_NEXT_ENTRY macro)
 	for (UBaseType_t priority = 0; priority < configMAX_PRIORITIES; ++priority) {
+		if (listCURRENT_LIST_LENGTH( &pxReadyTasksLists[priority] ) > ( UBaseType_t ) 0) {
+			listGET_OWNER_OF_NEXT_ENTRY( pxFirstTCB, &pxReadyTasksLists[priority] );
 
-		UBaseType_t readyListLength = listCURRENT_LIST_LENGTH(&pxReadyTasksLists[priority]);
-
-		if (readyListLength != 0) {
-
-			ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(&pxReadyTasksLists[priority]);
-
-			for (UBaseType_t i = 0; i < readyListLength; ++i) {
-				vPrintTCB(curNode->pvOwner, "Ready");
-				curNode = curNode->pxNext;
-			}
+			do {
+				listGET_OWNER_OF_NEXT_ENTRY( pxNextTCB, &pxReadyTasksLists[priority] );
+				vPrintTCB(pxNextTCB, "Ready");
+			} while (pxNextTCB != pxFirstTCB);
 		}
 	}
 
 	/* pxDelayedTaskList*/
-	UBaseType_t delayedListLength = listCURRENT_LIST_LENGTH(pxDelayedTaskList);
+	// version 1
+//	UBaseType_t delayedListLength = listCURRENT_LIST_LENGTH(pxDelayedTaskList);
+//
+//	if (delayedListLength != 0) {
+//		ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(pxDelayedTaskList);
+//
+//		for (UBaseType_t i = 0; i < delayedListLength; ++i) {
+//			vPrintTCB(curNode->pvOwner, "Blocked");
+//			curNode = curNode->pxNext;
+//		}
+//	}
 
-	if (delayedListLength != 0) {
-		ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(pxDelayedTaskList);
+	// version 2 (using listGET_OWNER_OF_NEXT_ENTRY macro)
+	if (listCURRENT_LIST_LENGTH( pxDelayedTaskList ) > ( UBaseType_t ) 0) {
+		listGET_OWNER_OF_NEXT_ENTRY( pxFirstTCB, pxDelayedTaskList );
 
-		for (UBaseType_t i = 0; i < delayedListLength; ++i) {
-			vPrintTCB(curNode->pvOwner, "Blocked");
-			curNode = curNode->pxNext;
-		}
+		do {
+			listGET_OWNER_OF_NEXT_ENTRY( pxNextTCB, pxDelayedTaskList );
+			vPrintTCB(pxNextTCB, "Blocked");
+		} while (pxNextTCB != pxFirstTCB);
 	}
 
 	/* pxOverflowDelayedTaskList */
-	UBaseType_t overflowListLength = listCURRENT_LIST_LENGTH(pxOverflowDelayedTaskList);
+//	UBaseType_t overflowListLength = listCURRENT_LIST_LENGTH(pxOverflowDelayedTaskList);
+//
+//	if (overflowListLength != 0) {
+//		ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(pxOverflowDelayedTaskList);
+//
+//		for (UBaseType_t i = 0; i < overflowListLength; ++i) {
+//			vPrintTCB(curNode->pvOwner, "Overflow");
+//			curNode = curNode->pxNext;
+//		}
+//	}
 
-	if (overflowListLength != 0) {
-		ListItem_t *curNode = listGET_ITEM_OF_HEAD_ENTRY(pxOverflowDelayedTaskList);
+	// version 2 (using listGET_OWNER_OF_NEXT_ENTRY macro)
+	if (listCURRENT_LIST_LENGTH( pxOverflowDelayedTaskList ) > ( UBaseType_t ) 0) {
+		listGET_OWNER_OF_NEXT_ENTRY( pxFirstTCB, pxOverflowDelayedTaskList );
 
-		for (UBaseType_t i = 0; i < overflowListLength; ++i) {
-			vPrintTCB(curNode->pvOwner, "Overflow");
-			curNode = curNode->pxNext;
-		}
+		do {
+			listGET_OWNER_OF_NEXT_ENTRY( pxNextTCB, pxOverflowDelayedTaskList );
+			vPrintTCB(pxNextTCB, "Overflow");
+		} while (pxNextTCB != pxFirstTCB);
 	}
 
 	/* Resume scheduler */
